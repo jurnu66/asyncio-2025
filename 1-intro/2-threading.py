@@ -28,7 +28,7 @@ def make_burger(student_id):
 def main():
     start = time.time()
     
-    for i in range(1, 6):
+    for i in range(1, 100):
         make_burger(i)
     
     end = time.time()
