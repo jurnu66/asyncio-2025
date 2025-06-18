@@ -1,49 +1,48 @@
-# Thread version of cooking 1 kitchen 1 chefs 1 dishes
-import os
-from time import time, ctime, sleep
-import threading
+import multiprocessing
+from time import sleep, ctime, time
 
-def cooking(index, basket):
-    print(f'{ctime()} Kitchen-{index} : Begin cooking...PID {os.getpid()}')
-    cooking_time = time()
-    print(f'{ctime()} Kitchen-{index} : Begin cooking...')
-    
-    # Use eggs from basket
-    basket.eat_egg(index)
-    
-    sleep(2)
-    duration = time() - cooking_time
-    print(f'{ctime()} Kitchen-{index} : Cooking done in {duration:0.2f} seconds!')
+def xlibm_processor(index):
+    print(f"{ctime()} Xlibm-{index}: Processing started")
+    sleep(1.5)  # Simulate processing time
+    print(f"{ctime()} Xlibm-{index}: Processing completed")
 
-class Basket:
-    def __init__(self):
-        self.eggs = 10
-        self.lock = threading.Lock()
+def como_processor(index):
+    print(f"{ctime()} Como-{index}: Processing started")
+    sleep(2.0)  # Simulate processing time
+    print(f"{ctime()} Como-{index}: Processing completed")
 
-    def eat_egg(self, index):
-        with self.lock:
-            print(f'{ctime()} Kitchen-{index} : Chef-{index} has lock eggs remaining {self.eggs}')
-            self.eggs -= 1
-            print(f'{ctime()} Kitchen-{index} : Chef-{index} has released lock with eggs remaining {self.eggs}')
+def subn_processor(index):
+    print(f"{ctime()} Subn-{index}: Processing started")
+    sleep(1.0)  # Simulate processing time
+    print(f"{ctime()} Subn-{index}: Processing completed")
 
 if __name__ == "__main__":
-    # Begin of main thread
-    print(f'{ctime()} Main      : Starting cook.')
-    print(f'{ctime()} Main      : ID of main process: {os.getpid()}')
+    print(f"{ctime()} Main: Starting path processing system")
     start_time = time()
     
-    basket = Basket()
+    processes = []
     
-    # Multi thread cooking
-    chefs = list()
-    for index in range(5):
-        c = threading.Thread(target=cooking, args=(index, basket,))
-        chefs.append(c)
-        c.start()
+    # Create 2 xlibm processors
+    for i in range(2):
+        p = multiprocessing.Process(target=xlibm_processor, args=(i,))
+        processes.append(p)
+        p.start()
     
-    for index, c in enumerate(chefs):
-        c.join()
+    # Create 2 como processors
+    for i in range(2):
+        p = multiprocessing.Process(target=como_processor, args=(i,))
+        processes.append(p)
+        p.start()
     
-    print(f'{ctime()} Main      : Basket eggs remaining {basket.eggs}')
+    # Create 2 subn processors
+    for i in range(2):
+        p = multiprocessing.Process(target=subn_processor, args=(i,))
+        processes.append(p)
+        p.start()
+    
+    # Wait for all processes to complete
+    for p in processes:
+        p.join()
+    
     duration = time() - start_time
-    print(f"{ctime()} Main      : Finished Cooking duration in {duration:0.2f} seconds")
+    print(f"{ctime()} Main: All processing completed in {duration:0.2f} seconds")
