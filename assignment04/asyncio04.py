@@ -5,7 +5,7 @@ import asyncio
 
 async def download_image(name, delay):
     print(f"{time.ctime()} {name} กำลังโหลด...")
-    await asyncio.sleep(delay)
+    await asyncio.sleep(abs(delay-2))
     print(f"{time.ctime()} {name} โหลดเสร็จแล้ว!")
 
 
