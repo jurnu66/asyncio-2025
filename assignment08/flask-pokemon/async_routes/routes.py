@@ -11,12 +11,12 @@ async def get_pokemon(url):
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
         print(f"{time.ctime()} - get {url}")
-    return response.json()
+        return response.json()
 
 # ดึงข้อมูลโปเกม่อนหลายตัว
 async def get_pokemons():
     # Get the number of comics to fetch from app config
-    NUMBER_OF_POKEMON = current_app.config["NUMBER_OF_XKCD"]
+    NUMBER_OF_POKEMON = current_app.config["NUMBER_OF_POKEMON"]
 
     # Generate a list of random comic numbers (0–300)
     rand_list=[]

@@ -15,7 +15,7 @@ def get_pokemon(url):
 # ดึงข้อมูลโปเกม่อนหลายตัว
 def get_pokemons():
     # Get the number of comics to fetch from app config
-    NUMBER_OF_POKEMON = current_app.config["NUMBER_OF_XKCD"]
+    NUMBER_OF_POKEMON = current_app.config["NUMBER_OF_POKEMON"]
 
     # Generate a list of random comic numbers (0–300)
     rand_list=[]
