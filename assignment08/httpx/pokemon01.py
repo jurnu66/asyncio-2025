@@ -1,12 +1,12 @@
 import requests
 
-url = 'https://pokeapi.co/api/v2/pokemon/pikachu'
+url  = "https://pokeapi.co/qpi/v2/pokemon/pikachu"
+response = requests.get(url)
 
-requests= requests.get(url)
-data = requests.json()
+data = response.json()
 
-print(f"Name: {data['name']}")
-print(f"ID: {data['id']}")
-print(f"Height: {data['height']}")
-print(f"Weight: {data['weight']}")
-print("types:", [t['type']['name'] for t in data['types']])
+print("Name:", data['name'])
+print("ID:", data['id'])
+print("Height:", data['height'])
+print("Weight:", data['weight'])
+print("Types:", [t['type']['name'] for t in data['types']])

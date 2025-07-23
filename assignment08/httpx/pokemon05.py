@@ -1,37 +1,36 @@
 import asyncio
 import httpx
+import time
+pokemon_names = ['pikachu', 'bulbasaur', 'charmander', 'squirtle', 'eevee',  'snorlax', 'gengar', 'mewtwo', 'psyduck', 'jigglypuff']
 
-#รายการชื่อโปเกมอน
-pokemon_names = [
-    "pikachu", "bulbasaur", "charmander", "squirtle", "eevee",
-    "snorlax", "gengar", "mewtwo", "psyduck", "jigglypuff"
-]
+async def get_pokemon_data(name, client):
+    response = await client.get(f'https://pokeapi.co/api/v2/pokemon/{name}')
+    data = response.json()
+    return data
 
-#ฟังก์ชันดึงข้อมูลโปเกมอน 
-async def fetch_pokemon_data(name):
-    url = f"https://pokeapi.co/api/v2/pokemon/{name}"
+async def fetch_all_pokemon(pokemon_names):
     async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        data = response.json()
-        return {
-            "name": data["name"],
-            "id": data["id"],
-            "base_experience": data["base_experience"]
-        }
 
-#ฟังก์ชันหลักสำหรับดึงข้อมูลโปเกมอนทั้งหมด
-async def main():
-    tasks = [fetch_pokemon_data(name) for name in pokemon_names]
-    results = await asyncio.gather(*tasks)
+        tasks = [get_pokemon_data(name, client) for name in pokemon_names]
 
-    # จัดเรียงผลลัพธ์ตาม base_experience
-    sorted_results = sorted(results, key=lambda x: x["base_experience"], reverse=True)  #lambda ฟังก์ชันสำหรับเรียงลำดับ
+        start = time.time()
+        result = await asyncio.gather(*tasks)
+        sorted_result = sorted(result, key=lambda x:x['base_experience'])
+        print("-------Lambda function sorted result---------")
+        for i in sorted_result:
+            print(f"{i['name']} -> ID : {i['id']}, Base_XP: {i['base_experience']}")
+        print("\n-------Alghorithum Sort---------")
+        for i in range((len(result))):
+            for j in range(i + 1, len(result)):
+                if result[i]['base_experience'] > result[j]['base_experience']:
+                    result[i], result[j] = result[j], result[i]
+        for data in result:
+            print(f"{data['name']} -> ID : {data['id']}, Base_XP: {data['base_experience']}")
 
-    # แสดงผลลัพธ์
-    print(f"{'Name':<12} {'ID':<5} {'Base Experience'}")
-    print("-" * 30)
-    for p in sorted_results:
-        print(f"{p['name']:<12} {p['id']:<5} {p['base_experience']}")
+        end = time.time()
+        print(f"Total time taken:{len(pokemon_names)} {end - start:.2f} seconds")
 
-if __name__ == "__main__":
-    asyncio.run(main())
+
+if __name__ == '__main__':
+    asyncio.run(fetch_all_pokemon(pokemon_names))
+

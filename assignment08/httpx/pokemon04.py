@@ -1,22 +1,24 @@
 import asyncio
 import httpx
+import time
+pokemon_names = ['pikachu', 'bulbasaur', 'charmander', 'squirtle', 'eevee',  'snorlax', 'gengar', 'mewtwo', 'psyduck', 'jigglypuff']
 
-async def fetch_pokemon(name):
-    url = f"https://pokeapi.co/api/v2/pokemon/{name}"
+async def get_pokemon_data(name, client):
+    response = await client.get(f'https://pokeapi.co/api/v2/pokemon/{name}')
+    data = response.json()
+    print(f"{data['name']} -> ID : {data['id']}, Types: {[t['type']['name'] for t in data['types']]}")
+
+async def fetch_all_pokemon(pokemon_names):
     async with httpx.AsyncClient() as client:
-        response = await client.get(url)
-        data = response.json()
 
-        types = [t['type']['name'] for t in data['types']]  # Define 'types' first
-        print(f"ID: {data['id']}, Types: {', '.join(types)}")  # Now it's safe to use
+        tasks = [get_pokemon_data(name, client) for name in pokemon_names]
 
-async def main():
-    pokemon_names = [
-        "pikachu", "bulbasaur", "charmander", "squirtle", "eevee",
-        "snorlax", "gengar", "mewtwo", "psyduck", "jigglypuff"
-    ]
-    tasks = [fetch_pokemon(name) for name in pokemon_names]
-    await asyncio.gather(*tasks)
+        start = time.time()
+        await asyncio.gather(*tasks)
+        end = time.time()
+        print(f"Total time taken:{len(pokemon_names)} {end - start:.2f} seconds")
 
-if __name__ == "__main__":
-    asyncio.run(main())
+
+if __name__ == '__main__':
+    asyncio.run(fetch_all_pokemon(pokemon_names))
+

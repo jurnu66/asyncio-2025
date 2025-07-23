@@ -1,22 +1,22 @@
-
-import asyncio
 import httpx
+import asyncio
 
 async def fetch(url):
     async with httpx.AsyncClient() as client:
         response = await client.get(url)
-        return response.status_code, url
+        return url, response.status_code
 
 async def main():
     urls = [
-        "https://www.example.com",
-        "https://httpbin.org",
+        "https://example.com",
+        "https://httpbin.org/get",
         "https://api.github.com"
     ]
+
     tasks = [fetch(url) for url in urls]
     results = await asyncio.gather(*tasks)
-    for status, url in results:
-        print(f"{url} - {status}")
 
-if __name__ == "__main__":
-    asyncio.run(main())
+    for url, status in results:
+        print(f"{url} → {status}")
+
+asyncio.run(main())

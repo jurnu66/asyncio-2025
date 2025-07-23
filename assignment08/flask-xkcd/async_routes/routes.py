@@ -2,18 +2,19 @@ import time
 import random
 import requests as requests
 from flask import Blueprint, render_template, current_app
-
+import asyncio, httpx
 # Create a Blueprint for sync routes
-sync_bp = Blueprint("sync", __name__)
+async_bp = Blueprint("async", __name__)
 
 # Helper function to fetch a single XKCD JSON by URL
-def get_xkcd(url):
-    response = requests.get(url)
-    print(f"{time.ctime()} - get {url}")    # Log the request time and URL
+async def get_xkcd(url):
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url)
+        print(f"{time.ctime()} - get {url}")    # Log the request time and URL
     return response.json()
 
 # Helper function to fetch multiple XKCD comics
-def get_xkcds():
+async def get_xkcds():
     # Get the number of comics to fetch from app config
     NUMBER_OF_XKCD = current_app.config["NUMBER_OF_XKCD"]
 
@@ -27,13 +28,14 @@ def get_xkcds():
         url = f'https://xkcd.com/{number}/info.0.json'
         xkcd_json = get_xkcd(url)   # Fetch comic JSON
         xkcd_data.append(xkcd_json)
+    xkcd_data = await asyncio.gather(*xkcd_data)  # Gather all async calls
     return xkcd_data
 
-# Route: GET /sync/
-@sync_bp.route('/')
+# Route: GET /async/
+@async_bp.route('/')
 def home():
     start_time = time.perf_counter()  # Start performance timer
-    xkcds = get_xkcds()               # Fetch random XKCD comics
+    xkcds = asyncio.run(get_xkcds())               # Fetch random XKCD comics
     end_time = time.perf_counter()    # End performance timer
 
     # Log time and count
