@@ -18,5 +18,12 @@ async def main():
     await asyncio.gather(task("A"), task("B"))
     print("All tasks done")
 
-asyncio.run(main)
+async def main():
+    async with asyncio.TaskGroup() as group:
+        # create and run tasks
+        group.create_task(task(name="A"))
+        group.create_task(task(name="B"))
+       
+    print(" done")
+asyncio.run(main())
 

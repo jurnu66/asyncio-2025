@@ -4,15 +4,14 @@
 # Hello
 # World
 
+
+
 import asyncio
-
 async def say_hello():
-    print("Hello")
+    print('Hello')
     await asyncio.sleep(1)
-    print("World")
-
+    print('World')
 async def main():
-    say_hello()
-
+    task = asyncio.create_task(say_hello())
+    await task
 asyncio.run(main())
-

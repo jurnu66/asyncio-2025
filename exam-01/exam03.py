@@ -11,7 +11,7 @@ async def compute(x, y):
 
 async def main():
     result = compute(2, 3)
-    print("Result:", result)
+    print("Result:", await result)
 
 asyncio.run(main())
 
